@@ -10,6 +10,7 @@ import 'package:shop_state/screens/edit_product_screen.dart';
 import 'package:shop_state/screens/orders_screen.dart';
 import 'package:shop_state/screens/product_detail_screen.dart';
 import 'package:shop_state/screens/products_overview_screen.dart';
+import 'package:shop_state/screens/splash_screen.dart';
 import 'package:shop_state/screens/user_products_screen.dart';
 
 void main() {
@@ -34,7 +35,10 @@ class MyApp extends StatelessWidget {
         builder: (context, auth, child) => MaterialApp(
           title: 'Shop',
           debugShowCheckedModeBanner: false,
-          home: auth.isAuth ? ProductsOverviewScreen() : AuthScreen(),
+          home: auth.isAuth ? ProductsOverviewScreen() : FutureBuilder(
+            future: auth.tryAutoLogin(),
+            builder: (context, snapshot) => snapshot.connectionState == ConnectionState.waiting ? SplashScreen() : AuthScreen(),
+          ),
           theme: ThemeData(
             primaryColor: Colors.purple,
             accentColor: Colors.deepOrange,
