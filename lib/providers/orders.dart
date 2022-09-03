@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:shop_state/providers/cart.dart';
+import 'package:http/http.dart' as http;
 
 class OrderItem {
   final String id;
@@ -20,14 +23,61 @@ class Orders with ChangeNotifier {
     return [..._orders];
   }
 
-  void addOrder(List<CartItem> cartProducts, double total) {
+  Future<void> fetchAndSetOrders() async {
+    final url = Uri.https(
+        'flutter-shop-c8eda-default-rtdb.firebaseio.com', 'orders.json');
+
+    final response = await http.get(url);
+    final List<OrderItem> loadedOrders = [];
+    final extractedData = json.decode(response.body) as Map<String, dynamic>;
+    // ignore: unnecessary_null_comparison
+    if (extractedData == null) {
+      return;
+    }
+    extractedData.forEach((key, value) {
+      loadedOrders.add(OrderItem(
+          id: key,
+          amount: value['amount'],
+          products: (value['products'] as List<dynamic>)
+              .map((e) => CartItem(
+                  id: e['id'],
+                  title: e['title'],
+                  price: e['price'],
+                  quantity: e['quantity']))
+              .toList(),
+          dateTime: DateTime.parse(value['dateTime'])));
+    });
+    _orders = loadedOrders.reversed.toList();
+    notifyListeners();
+  }
+
+  Future<void> addOrder(List<CartItem> cartProducts, double total) async {
+    final url = Uri.https(
+        'flutter-shop-c8eda-default-rtdb.firebaseio.com', 'orders.json');
+    final timeStamp = DateTime.now();
+    final Map<String, Object> body = {
+      'amount': total,
+      "dateTime": timeStamp.toIso8601String(),
+      'products': cartProducts
+          .map((cp) => {
+                'id': cp.id,
+                'title': cp.title,
+                'quantity': cp.quantity,
+                'price': cp.price
+              })
+          .toList(),
+    };
+
+    final response = await http.post(url, body: json.encode(body));
+    final data = json.decode(response.body);
+
     _orders.insert(
         0,
         OrderItem(
-            id: DateTime.now().toString(),
+            id: data['name'],
             amount: total,
             products: cartProducts,
-            dateTime: DateTime.now()));
+            dateTime: timeStamp));
     notifyListeners();
   }
 }
