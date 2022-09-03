@@ -23,9 +23,11 @@ class Orders with ChangeNotifier {
     return [..._orders];
   }
 
-  Future<void> fetchAndSetOrders() async {
-    final url = Uri.https(
-        'flutter-shop-c8eda-default-rtdb.firebaseio.com', 'orders.json');
+  Future<void> fetchAndSetOrders(String? authToken) async {
+    const authority = 'flutter-shop-c8eda-default-rtdb.firebaseio.com';
+    const path = 'orders.json';
+    final params = {'auth': authToken};
+    final url = Uri.https(authority, path, params);
 
     final response = await http.get(url);
     final List<OrderItem> loadedOrders = [];
@@ -51,9 +53,12 @@ class Orders with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> addOrder(List<CartItem> cartProducts, double total) async {
-    final url = Uri.https(
-        'flutter-shop-c8eda-default-rtdb.firebaseio.com', 'orders.json');
+  Future<void> addOrder(List<CartItem> cartProducts, double total, String? authToken) async {
+    const authority = 'flutter-shop-c8eda-default-rtdb.firebaseio.com';
+    const path = 'orders.json';
+    final params = {'auth': authToken};
+    final url = Uri.https(authority, path, params);
+    
     final timeStamp = DateTime.now();
     final Map<String, Object> body = {
       'amount': total,

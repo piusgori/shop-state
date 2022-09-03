@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shop_state/providers/auth.dart';
 import 'package:shop_state/providers/orders.dart' show Orders;
 import 'package:shop_state/widgets/app_drawer.dart';
 import 'package:shop_state/widgets/order_item.dart';
@@ -15,7 +16,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
   // ignore: prefer_typing_uninitialized_variables
   var _ordersFuture;
   Future _obtainOrdersFutur() {
-    return Provider.of<Orders>(context, listen: false).fetchAndSetOrders();
+    return Provider.of<Orders>(context, listen: false).fetchAndSetOrders(Provider.of<Auth>(context, listen: false).token);
   }
 
   @override

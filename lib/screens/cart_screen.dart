@@ -1,5 +1,6 @@
 import "package:flutter/material.dart";
 import 'package:provider/provider.dart';
+import 'package:shop_state/providers/auth.dart';
 import 'package:shop_state/providers/cart.dart' show Cart;
 import 'package:shop_state/providers/orders.dart';
 import 'package:shop_state/widgets/cart_item.dart';
@@ -48,12 +49,7 @@ class CartScreen extends StatelessWidget {
           Expanded(
             child: ListView.builder(
               itemCount: cart.itemCount,
-              itemBuilder: (context, i) => CartItem(
-                id: cart.items.values.toList()[i].id,
-                title: cart.items.values.toList()[i].title,
-                price: cart.items.values.toList()[i].price,
-                quantity: cart.items.values.toList()[i].quantity,
-                productId: cart.items.keys.toString()[i],
+              itemBuilder: (context, i) => CartItem(cart.items.values.toList()[i].id, cart.items.values.toList()[i].title, cart.items.values.toList()[i].price, cart.items.values.toList()[i].quantity, cart.items.keys.toString()[i],
               ),
             ),
           )
@@ -92,7 +88,7 @@ class _OrderButtonState extends State<OrderButton> {
                 _isLoading = true;
               });
               await Provider.of<Orders>(context, listen: false).addOrder(
-                  widget.cart.items.values.toList(), widget.cart.totalAmount);
+                  widget.cart.items.values.toList(), widget.cart.totalAmount, Provider.of<Auth>(context, listen: false).token);
               widget.cart.clear();
               setState(() {
                 _isLoading = false;

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shop_state/providers/auth.dart';
 import 'package:shop_state/providers/products.dart';
 import 'package:shop_state/screens/edit_product_screen.dart';
 import 'package:shop_state/widgets/app_drawer.dart';
@@ -9,7 +10,7 @@ class UserProductsScreen extends StatelessWidget {
   static const routeName = '/user-products';
 
   Future<void> _refreshProducts(BuildContext context) async {
-    Provider.of<Products>(context, listen: false).fetchAndSetProducts();
+    Provider.of<Products>(context, listen: false).fetchAndSetProducts(Provider.of<Auth>(context, listen: false).token);
   }
 
   @override
@@ -19,10 +20,10 @@ class UserProductsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).primaryColor,
-        title: Text('Your products'),
+        title: const Text('Your products'),
         actions: <Widget>[
           IconButton(
-            icon: Icon(Icons.add),
+            icon: const Icon(Icons.add),
             onPressed: () {
               Navigator.of(context).pushNamed(EditProductScreen.routeName);
             },
@@ -42,7 +43,7 @@ class UserProductsScreen extends StatelessWidget {
                     id: productsData.items[i].id,
                     imageUrl: productsData.items[i].imageUrl,
                     title: productsData.items[i].title),
-                Divider(),
+                const Divider(),
               ],
             ),
           ),

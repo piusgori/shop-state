@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shop_state/providers/auth.dart';
 import 'package:shop_state/providers/products.dart';
 import 'package:shop_state/screens/edit_product_screen.dart';
 
@@ -37,7 +38,7 @@ class UserProductItem extends StatelessWidget {
               onPressed: () async {
                 try {
                   await Provider.of<Products>(context, listen: false)
-                      .deleteProduct(id);
+                      .deleteProduct(id, Provider.of<Auth>(context, listen: false).token);
                 } catch (error) {
                   scaffold.showSnackBar(const SnackBar(content: Text('Deleting failed', textAlign: TextAlign.center,)));
                 }

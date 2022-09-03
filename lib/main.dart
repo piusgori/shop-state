@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shop_state/providers/auth.dart';
 import 'package:shop_state/providers/cart.dart';
 import 'package:shop_state/providers/orders.dart';
 import 'package:shop_state/providers/products.dart';
+import 'package:shop_state/screens/auth_screen.dart';
 import 'package:shop_state/screens/cart_screen.dart';
 import 'package:shop_state/screens/edit_product_screen.dart';
 import 'package:shop_state/screens/orders_screen.dart';
@@ -19,16 +21,20 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(
-          create: (ctx) => Products(),
-        ),
+        // ChangeNotifierProxyProvider<Auth, Products>(
+        //   create: (context) => Products(null, []),
+        //   update: (context, value, previous) => Products(value.token, previous!.items),
+        // ),
+        ChangeNotifierProvider(create: (context) => Products(),),
         ChangeNotifierProvider(create: (ctx) => Cart()),
-        ChangeNotifierProvider(create: (context) => Orders(),)
+        ChangeNotifierProvider(create: (context) => Orders(),),
+        ChangeNotifierProvider(create: (context) => Auth(),)
       ],
-      child: MaterialApp(
+      child: Consumer<Auth>(
+        builder: (context, auth, child) => MaterialApp(
           title: 'Shop',
           debugShowCheckedModeBanner: false,
-          home: ProductsOverviewScreen(),
+          home: auth.isAuth ? ProductsOverviewScreen() : AuthScreen(),
           theme: ThemeData(
             primaryColor: Colors.purple,
             accentColor: Colors.deepOrange,
@@ -40,7 +46,8 @@ class MyApp extends StatelessWidget {
             OrdersScreen.routeName: (context) => OrdersScreen(),
             UserProductsScreen.routeName: (context) => UserProductsScreen(),
             EditProductScreen.routeName: (context) => EditProductScreen()
-          }),
+          })
+      )
     );
   }
 }

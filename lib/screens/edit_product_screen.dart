@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shop_state/providers/auth.dart';
 import 'package:shop_state/providers/product.dart';
 import 'package:shop_state/providers/products.dart';
 
@@ -81,11 +82,11 @@ class _EditProductScreenState extends State<EditProductScreen> {
     });
     if (_editedProduct.id.isNotEmpty) {
       await Provider.of<Products>(context, listen: false)
-          .updateProduct(_editedProduct.id, _editedProduct);
+          .updateProduct(_editedProduct.id, _editedProduct, Provider.of<Auth>(context, listen: false).token);
     } else {
       try {
         await Provider.of<Products>(context, listen: false)
-            .addProduct(_editedProduct);
+            .addProduct(_editedProduct, Provider.of<Auth>(context, listen: false).token);
       } catch (err) {
         await showDialog(
           context: context,

@@ -44,6 +44,10 @@ class Products with ChangeNotifier {
 
   bool _showFavoritesOnly = false;
 
+  // String? authToken;
+
+  // Products(this.authToken, this._items);
+
   List<Product> get items {
     // if (_showFavoritesOnly) {
     //   return _items.where((element) => element.isFavorite).toList();
@@ -58,9 +62,11 @@ class Products with ChangeNotifier {
   Product findById(String id) =>
       _items.firstWhere((element) => element.id == id);
 
-  Future<void> addProduct(Product product) async {
-    const url =
-        'https://flutter-shop-c8eda-default-rtdb.firebaseio.com/products.json';
+  Future<void> addProduct(Product product, [String? authToken]) async {
+    const authority = 'flutter-shop-c8eda-default-rtdb.firebaseio.com';
+    const path = 'products.json';
+    final params = {'auth': authToken};
+    final url = Uri.https(authority, path, params);
 
     Map value = {
       "title": product.title,
@@ -71,10 +77,7 @@ class Products with ChangeNotifier {
     };
 
     try {
-      final response = await http.post(
-          Uri.https('flutter-shop-c8eda-default-rtdb.firebaseio.com',
-              'products.json'),
-          body: json.encode(value));
+      final response = await http.post(url, body: json.encode(value));
       var res = json.decode(response.body);
       final newProduct = Product(
           id: res['name'],
@@ -89,12 +92,16 @@ class Products with ChangeNotifier {
     }
   }
 
-  Future<void> fetchAndSetProducts() async {
+  Future<void> fetchAndSetProducts(String? authToken) async {
+    const authority = 'flutter-shop-c8eda-default-rtdb.firebaseio.com';
+    const path = 'products.json';
+    final params = {'auth': authToken};
+    final url = Uri.https(authority, path, params);
     try {
-      final response = await http.get(Uri.https(
-          'flutter-shop-c8eda-default-rtdb.firebaseio.com', 'products.json'));
+      final response = await http.get(url);
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
       final List<Product> loadedProducts = [];
+
       extractedData.forEach((prodId, prodData) {
         loadedProducts.add(Product(
             id: prodId,
@@ -111,12 +118,15 @@ class Products with ChangeNotifier {
     }
   }
 
-  Future<void> updateProduct(String id, Product newProduct) async {
+  Future<void> updateProduct(
+      String id, Product newProduct, String? authToken) async {
     final prodIndex = _items.indexWhere((element) => element.id == id);
+    const authority = 'flutter-shop-c8eda-default-rtdb.firebaseio.com';
+    final path = 'products/$id.json';
+    final params = {'auth': authToken};
+    final url = Uri.https(authority, path, params);
 
     if (prodIndex >= 0) {
-      final url = Uri.https('flutter-shop-c8eda-default-rtdb.firebaseio.com',
-          'products/${id}.json');
       final Map value = {
         'title': newProduct.title,
         'description': newProduct.description,
@@ -131,9 +141,12 @@ class Products with ChangeNotifier {
     }
   }
 
-  Future<void> deleteProduct(String id) async {
-    final url = Uri.https(
-        'flutter-shop-c8eda-default-rtdb.firebaseio.com', 'products/$id.json');
+  Future<void> deleteProduct(String id, String? authToken) async {
+    const authority = 'flutter-shop-c8eda-default-rtdb.firebaseio.com';
+    final path = 'products/$id.json';
+    final params = {'auth': authToken};
+    final url = Uri.https(authority, path, params);
+
     final existingProductIndex =
         _items.indexWhere((element) => element.id == id);
     Product? existingProduct = _items[existingProductIndex];
