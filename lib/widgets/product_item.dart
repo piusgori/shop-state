@@ -21,15 +21,6 @@ class ProductItem extends StatelessWidget {
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
       child: GridTile(
-        child: GestureDetector(
-            onTap: () {
-              Navigator.of(context).pushNamed(ProductDetailScreen.routeName,
-                  arguments: product.id);
-            },
-            child: Image.network(
-              product.imageUrl,
-              fit: BoxFit.cover,
-            )),
         footer: GridTileBar(
           backgroundColor: Colors.black87,
           leading: IconButton(
@@ -67,6 +58,19 @@ class ProductItem extends StatelessWidget {
             color: Theme.of(context).accentColor,
           ),
         ),
+        child: GestureDetector(
+            onTap: () {
+              Navigator.of(context).pushNamed(ProductDetailScreen.routeName,
+                  arguments: product.id);
+            },
+            child: Hero(
+              tag: product.id,
+              child: FadeInImage(
+                fit: BoxFit.cover,
+                placeholder: const AssetImage('assets/images/product-placeholder.png'),
+                image: NetworkImage(product.imageUrl),
+              ),
+            )),
       ),
     );
   }
